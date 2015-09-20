@@ -111,6 +111,18 @@ Note that there are a number of days/intervals where there are missing values (c
 
   3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
+**Logic used for above task - **
+
+
+To fill the missing NA we will use the mean of specific interval as reported on the other day.
+
+First we will locate the missing step value
+
+Then we will find the mean value for that specific interval 
+
+After that we can put the value coming from above step into the missing Steps value spot.
+
+
 
 ```r
 #create another dataframe copy the orginal values in it 

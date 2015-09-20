@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 ***
 
 ##### **Loading and preprocessing the data**
@@ -13,7 +8,8 @@ Show any code that is needed to
   1.  Load the data (i.e. read.csv())
   
   2.  Process/transform the data (if necessary) into a format suitable for your analysis
-```{r echo = TRUE}
+
+```r
   #Change the working directory to the folder where unzipped 
   #file exists; On your system path would be different please ensure to 
   #put the right path
@@ -22,7 +18,6 @@ Show any code that is needed to
 
   # load the unzipped activity data file in the dataframe named as ds
   ds_orignial<-read.csv(file="activity.csv",colClasses=c("integer","Date","integer"))
-
 ```
 
 ##### **What is mean total number of steps taken per day?**
@@ -35,7 +30,8 @@ For this part of the assignment, you can ignore the missing values in the datase
 
 
 
-```{r echo = TRUE}
+
+```r
 #get rid of NA values 
 ds_omitted_na <-na.omit(ds_orignial)
 
@@ -46,14 +42,26 @@ ds_steps_by_date<-aggregate(steps ~ date, ds_omitted_na, sum)
 hist(ds_steps_by_date$steps,breaks=10,col="red" , xlab = "Total Steps Group by Days", main="Total number of steps taken each day")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
   3. Calculate and report the mean and median of the total number of steps taken per day
-```{r echo = TRUE}
+
+```r
 # get mean 
 mean(ds_steps_by_date$steps)
+```
 
+```
+## [1] 10766.19
+```
+
+```r
 # get median
 median(ds_steps_by_date$steps)
+```
 
+```
+## [1] 10765
 ```
 
 ##### **What is the average daily activity pattern?**
@@ -61,29 +69,41 @@ median(ds_steps_by_date$steps)
   1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
 
-```{r echo = TRUE}
 
+```r
 #Average steps grouped by intervals
 ds_steps_by_interval<-aggregate(steps ~ interval, ds_omitted_na, mean)
 
 #create the plot
 plot(ds_steps_by_interval$interval, ds_steps_by_interval$steps, type='l', ylab="Average steps", xlab="Interval through out day", main ="Averaged steps across all day ")
-
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+
   2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
-```{r echo = TRUE}
+
+```r
   #Interval with maximum number of steps
   ds_steps_by_interval[which.max(ds_steps_by_interval$steps),]
+```
+
+```
+##     interval    steps
+## 104      835 206.1698
 ```
 
 ##### **Imputing missing values**
 Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
 
   1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
-```{r echo = TRUE}
+
+```r
   #get the count for rows where steps variable is NA
   nrow(ds_orignial[!complete.cases(ds_orignial),])
+```
+
+```
+## [1] 2304
 ```
 
   2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
@@ -91,7 +111,8 @@ Note that there are a number of days/intervals where there are missing values (c
 
   3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
-```{r echo = TRUE}
+
+```r
 #create another dataframe copy the orginal values in it 
 ds_backfill<-ds_orignial
 
@@ -108,15 +129,12 @@ for (i in 1:nrow(ds_backfill)){
     
   }
 }
-
 ```
 
   4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
-```{r echo = TRUE}
 
- 
-  
+```r
   #sum of steps grouped by Days
   ds_backfill_steps_by_date <- aggregate(steps ~ date, ds_backfill, sum)
  
@@ -124,14 +142,21 @@ for (i in 1:nrow(ds_backfill)){
 
   #generate histogram with the backfilled values
   hist(ds_backfill_steps_by_date$steps,breaks=10,col="red" , xlab = "Total Steps Group by Days", main="Total number of steps taken each day(using backfilled values)")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
+
+```r
   #checking for the impact of backfilling the step values on means and median
   
   if (mean(ds_backfill_steps_by_date$steps)!=mean(ds_steps_by_date$steps))
     print("mean changed due to backfilling")
   if (median(ds_backfill_steps_by_date$steps)!=median(ds_steps_by_date$steps))
     print("median changed due to backfilling")
-  
+```
+
+```
+## [1] "median changed due to backfilling"
 ```
 
 Notice the difference between histogram with the missing NA values and the one with the backfilled values. Now the peak is crossing 25 earlier the peak was little over 15
@@ -146,7 +171,8 @@ For this part the weekdays() function may be of some help here. Use the dataset 
   2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
 
 
-```{r echo = TRUE}
+
+```r
 # initalize the data frame  
 ds_day_factor <-ds_backfill
   
@@ -161,11 +187,16 @@ ds_steps_by_interval_day_type<-aggregate(steps ~ interval + day_type, ds_day_fac
 
 #load ggplot
 library(ggplot2)
+```
 
+```
+## Warning: package 'ggplot2' was built under R version 3.2.2
+```
+
+```r
 #draw the plot
 qplot(interval, steps, data=ds_steps_by_interval_day_type, geom=c("line"), xlab="Interval",  ylab="Step count", main="Average Steps broken down into the day type ") + facet_wrap(~ day_type, ncol=1)
-
-	  
-    
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png) 
 
